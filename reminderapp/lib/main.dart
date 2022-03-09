@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
@@ -84,10 +84,11 @@ class _MyHomePageState extends State<MyHomePage> {
         initialDate: selectedDate,
         firstDate: DateTime(2021, 3),
         lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate)
+    if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
       });
+    }
   }
 
   String? codeDialog;
@@ -100,18 +101,88 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.teal,
         title: const Text('Reminder'),
       ),
+      //body: Center(
+      //     child: Row(
+      //   children: <Widget>[
+      //     FloatingActionButton(
+      //       onPressed: () {
+      //         _displayTextInputDialog(context);
+      //         _selectDate(context);
+      //       },
+      //       child: const Icon(Icons.add),
+      //     ),
+      //   ],
+      // )),
       body: Center(
-          child: Row(
-        children: <Widget>[
-          FloatingActionButton(
-            onPressed: () {
-              _displayTextInputDialog(context);
-              _selectDate(context);
-            },
-            child: const Icon(Icons.add),
+        child: Material(
+          color: const Color.fromARGB(255, 63, 138, 168),
+          child: ListView(
+            children: [
+              const SizedBox(height: 40),
+              buildMenuItem(
+                text: 'Work Task',
+                icon: Icons.access_alarm,
+                onClicked: () => selectedItem(context, 0),
+              ),
+              const SizedBox(height: 40),
+              buildMenuItem(
+                text: 'Personal Task',
+                icon: Icons.access_alarm,
+                onClicked: () => selectedItem(context, 0),
+              ),
+            ],
           ),
-        ],
-      )),
+        ),
+        // child: Row(
+        //   children: <Widget>[
+        //     FloatingActionButton(
+        //       onPressed: () {
+        //         _displayTextInputDialog(context);
+        //         _selectDate(context);
+        //       },
+        //       child: const Icon(Icons.add),
+        //     ),
+        //   ],
+        // )
+      ),
     );
   }
+
+  Widget buildMenuItem({
+    required String text,
+    required IconData icon,
+    VoidCallback? onClicked,
+  }) {
+    const color = Colors.white;
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: color,
+      ),
+      title: Text(text, style: const TextStyle(color: color)),
+      onTap: onClicked,
+    );
+  }
+
+  void selectedItem(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => const WorkReminder(),
+        ));
+        break;
+    }
+  }
 }
+
+class WorkReminder extends StatelessWidget {
+  const WorkReminder({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Work Task'),
+        ),
+      );
+}
+*/
