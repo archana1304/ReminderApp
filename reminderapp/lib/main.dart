@@ -31,8 +31,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   DateTime selectedDate = DateTime.now();
+  TimeOfDay selectedTime = TimeOfDay.now();
+
   final TextEditingController _textFieldController = TextEditingController();
-  Future<void> _displayTextInputDialog(BuildContext context) async {
+  _displayTextInputDialog(BuildContext context) async {
     return showDialog(
         context: context,
         builder: (context) {
@@ -73,12 +75,32 @@ class _MyHomePageState extends State<MyHomePage> {
                   });
                 },
               ),
+              ElevatedButton(
+                child: const Icon(Icons.event),
+                style: ElevatedButton.styleFrom(
+                  onPrimary: Colors.white,
+                  primary: Color.fromARGB(255, 63, 99, 129),
+                ),
+                onPressed: () {
+                  _selectDate(context);
+                },
+              ),
+              ElevatedButton(
+                child: const Icon(Icons.timer),
+                style: ElevatedButton.styleFrom(
+                  onPrimary: Colors.white,
+                  primary: Color.fromARGB(255, 125, 165, 72),
+                ),
+                onPressed: () {
+                  _selectTime(context);
+                },
+              ),
             ],
           );
         });
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
@@ -91,22 +113,33 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  _selectTime(BuildContext context) async {
+    final TimeOfDay? timeOfDay = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+      initialEntryMode: TimePickerEntryMode.dial,
+    );
+    if (timeOfDay != null && timeOfDay != selectedTime) {
+      setState(() {
+        selectedTime = timeOfDay;
+      });
+    }
+  }
+
   String? codeDialog;
   String? valueText;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(   
-      appBar: AppBar(
-        backgroundColor: Colors.teal,
-        title: const Text('Reminder')
-        ),
-        body:Center(  
-          child: Material(
-            color: const Color.fromARGB(255, 63, 138, 168),
-            child: ListView(
-              children: [
-                const SizedBox(height: 40),
+    return Scaffold(
+      appBar:
+          AppBar(backgroundColor: Colors.teal, title: const Text('Reminder')),
+      body: Center(
+        child: Material(
+          color: const Color.fromARGB(255, 63, 138, 168),
+          child: ListView(
+            children: [
+              const SizedBox(height: 40),
               buildMenuItem(
                 text: 'Work Task',
                 icon: Icons.access_alarm,
@@ -118,31 +151,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: Icons.access_alarm,
                 onClicked: () => selectedItem(context, 0),
               ),
-              ],
-            ),  
+            ],
           ),
         ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-                _displayTextInputDialog(context);
-                _selectDate(context);
-                },
-                child: const Icon(Icons.add),
+          _displayTextInputDialog(context);
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
-  
-/*child: Row(
-        children: <Widget>[
-          FloatingActionButton(
-            onPressed: () {
-              _displayTextInputDialog(context);
-              _selectDate(context);
-            },
-            child: const Icon(Icons.add),
-          ),
-        ],
-      )*/
+
   Widget buildMenuItem({
     required String text,
     required IconData icon,
