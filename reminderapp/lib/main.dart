@@ -131,6 +131,44 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  /*Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.teal,
+        title: const Text('Reminder'),
+      ),
+      body: Center(
+        child: Material(
+          color: const Color.fromARGB(255, 63, 138, 168),
+          child: ListView(
+            children: [
+              const SizedBox(height: 40),
+              buildMenuItem(
+                text: 'Work Task',
+                icon: Icons.access_alarm,
+                onClicked: () => selectedItem(context, 0),
+              ),
+              const SizedBox(height: 40),
+              buildMenuItem(
+                text: 'Personal Task',
+                icon: Icons.access_alarm,
+                onClicked: () => selectedItem(context, 0),
+              ),      
+              FloatingActionButton(                      // - BUTTON
+                onPressed: () {
+                _displayTextInputDialog(context);
+                _selectDate(context);
+                },
+                child: const Icon(Icons.add),              
+              ),
+            ],
+          ),
+                    
+        ),
+      ),
+    );
+  }*/
   
 /*child: Row(
         children: <Widget>[
