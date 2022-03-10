@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,21 +33,31 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
+  String _hour = "";
+  String _minute = "";
+  String _time = "";
+  //var _setTime, _setDate;
+  String inputDate = "";
+  //List<String> addedReminders = [];
+  //final List<Map<String, dynamic>> _items = List.
 
   final TextEditingController _textFieldController = TextEditingController();
-  _displayTextInputDialog(BuildContext context) async {
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
+
+  Future<void> _displayTextInputDialog(BuildContext context) async {
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
             title: const Text('Add Reminder'),
             content: TextField(
+              controller: _textFieldController,
               onChanged: (value) {
                 setState(() {
-                  valueText = value;
+                  valueText = _textFieldController.text;
                 });
               },
-              controller: _textFieldController,
               decoration: const InputDecoration(hintText: "Reminder"),
             ),
             actions: <Widget>[
@@ -71,7 +82,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   setState(() {
                     codeDialog = valueText;
+                    //_textFieldController.text = valueText ?? "";
                     Navigator.pop(context);
+                    //vents
                   });
                 },
               ),
@@ -79,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Icon(Icons.event),
                 style: ElevatedButton.styleFrom(
                   onPrimary: Colors.white,
-                  primary: Color.fromARGB(255, 63, 99, 129),
+                  primary: const Color.fromARGB(255, 63, 99, 129),
                 ),
                 onPressed: () {
                   _selectDate(context);
@@ -89,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Icon(Icons.timer),
                 style: ElevatedButton.styleFrom(
                   onPrimary: Colors.white,
-                  primary: Color.fromARGB(255, 125, 165, 72),
+                  primary: const Color.fromARGB(255, 125, 165, 72),
                 ),
                 onPressed: () {
                   _selectTime(context);
@@ -100,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
-  _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
@@ -109,11 +122,12 @@ class _MyHomePageState extends State<MyHomePage> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
+        _dateController.text = DateFormat.yMd().format(selectedDate);
       });
     }
   }
 
-  _selectTime(BuildContext context) async {
+  Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
       initialTime: selectedTime,
@@ -122,6 +136,15 @@ class _MyHomePageState extends State<MyHomePage> {
     if (timeOfDay != null && timeOfDay != selectedTime) {
       setState(() {
         selectedTime = timeOfDay;
+        inputDate = selectedTime.format(context);
+
+        //var _time;
+        // _hour = selectedTime.hour.toString();
+        // _minute = selectedTime.minute.toString();
+        // _timeController.text = _time;
+        // _time = _hour + ' : ' + _minute;
+        // inputFormat = DateFormat('HH:mm');
+        // inputDate = inputFormat.parse(_time.toString());
       });
     }
   }
@@ -141,16 +164,17 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               const SizedBox(height: 40),
               buildMenuItem(
-                text: 'Work Task',
+                text: _textFieldController.text,
                 icon: Icons.access_alarm,
                 onClicked: () => selectedItem(context, 0),
+                time: inputDate,
               ),
-              const SizedBox(height: 40),
-              buildMenuItem(
-                text: 'Personal Task',
-                icon: Icons.access_alarm,
-                onClicked: () => selectedItem(context, 0),
-              ),
+              // const SizedBox(height: 40),
+              // buildMenuItem(
+              //   text: 'Personal Task',
+              //   icon: Icons.access_alarm,
+              //   onClicked: () => selectedItem(context, 0),
+              // ),
             ],
           ),
         ),
@@ -168,6 +192,8 @@ class _MyHomePageState extends State<MyHomePage> {
     required String text,
     required IconData icon,
     VoidCallback? onClicked,
+    //required String date,
+    required String time,
   }) {
     const color = Colors.white;
     return ListTile(
@@ -176,6 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
         color: color,
       ),
       title: Text(text, style: const TextStyle(color: color)),
+      subtitle: Text(time, style: const TextStyle(color: color)),
       onTap: onClicked,
     );
   }
