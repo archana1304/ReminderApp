@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -33,13 +35,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
-  String _hour = "";
-  String _minute = "";
-  String _time = "";
-  //var _setTime, _setDate;
+
   String inputDate = "";
-  //List<String> addedReminders = [];
-  //final List<Map<String, dynamic>> _items = List.
+  //List<TextEditingController> _controllers = new List.generate(int, (index) => null)
+  List<TextEditingController> _controllers = [];
 
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -82,7 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   setState(() {
                     codeDialog = valueText;
-                    //_textFieldController.text = valueText ?? "";
                     Navigator.pop(context);
                     //vents
                   });
@@ -137,14 +135,6 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         selectedTime = timeOfDay;
         inputDate = selectedTime.format(context);
-
-        //var _time;
-        // _hour = selectedTime.hour.toString();
-        // _minute = selectedTime.minute.toString();
-        // _timeController.text = _time;
-        // _time = _hour + ' : ' + _minute;
-        // inputFormat = DateFormat('HH:mm');
-        // inputDate = inputFormat.parse(_time.toString());
       });
     }
   }
@@ -160,23 +150,40 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Material(
           color: const Color.fromARGB(255, 63, 138, 168),
-          child: ListView(
-            children: [
-              const SizedBox(height: 40),
-              buildMenuItem(
-                text: _textFieldController.text,
+          // child: ListView(
+          //   children: [
+          //     const SizedBox(height: 40),
+          //     buildMenuItem(
+          //       text: _textFieldController.text,
+          //       icon: Icons.access_alarm,
+          //       onClicked: () => selectedItem(context, 0),
+          //       time: inputDate,
+          //       date: _dateController.text,
+          //     ),
+          //     // const SizedBox(height: 40),
+          //     // buildMenuItem(
+          //     //   text: 'Personal Task',
+          //     //   icon: Icons.access_alarm,
+          //     //   onClicked: () => selectedItem(context, 0),
+          //     // ),
+          //   ],
+          // ),
+          child:
+              ListView.builder(itemBuilder: (BuildContext context, int index) {
+            _controllers.add(_textFieldController);
+            return Container(
+              child: buildMenuItem(
+                text: _controllers[index].text,
                 icon: Icons.access_alarm,
-                onClicked: () => selectedItem(context, 0),
+                onClicked: () {
+                  selectedItem(context, index);
+                  _textFieldController.dispose();
+                }, //() => selectedItem(context, 0),
                 time: inputDate,
+                date: _dateController.text,
               ),
-              // const SizedBox(height: 40),
-              // buildMenuItem(
-              //   text: 'Personal Task',
-              //   icon: Icons.access_alarm,
-              //   onClicked: () => selectedItem(context, 0),
-              // ),
-            ],
-          ),
+            );
+          }),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -192,7 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
     required String text,
     required IconData icon,
     VoidCallback? onClicked,
-    //required String date,
+    required String date,
     required String time,
   }) {
     const color = Colors.white;
@@ -203,6 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       title: Text(text, style: const TextStyle(color: color)),
       subtitle: Text(time, style: const TextStyle(color: color)),
+      trailing: Text(date, style: const TextStyle(color: color)),
       onTap: onClicked,
     );
   }
