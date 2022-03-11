@@ -37,8 +37,18 @@ class _MyHomePageState extends State<MyHomePage> {
   TimeOfDay selectedTime = TimeOfDay.now();
 
   String inputDate = "";
-  //List<TextEditingController> _controllers = new List.generate(int, (index) => null)
-  List<TextEditingController> _controllers = [];
+  List<String> _reminder = [];
+  // List<TextEditingController> controllers = [];
+  //int _count = 0;
+
+  // void _add() {
+  //   TextEditingController controller = TextEditingController();
+  //   controllers.add(controller);
+
+  //   //for (int i = 0; i < controllers.length; i++) {}
+  // }
+
+  //var _children = List.from(_children)
 
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -52,11 +62,24 @@ class _MyHomePageState extends State<MyHomePage> {
             title: const Text('Add Reminder'),
             content: TextField(
               controller: _textFieldController,
-              onChanged: (value) {
+              onSubmitted: (text) {
+                _reminder.add(_textFieldController.text);
+                //setState(() {});
+
                 setState(() {
-                  valueText = _textFieldController.text;
+                  _reminder.add(_textFieldController.text);
+                  //_textFieldController.clear();
                 });
+                // _reminder.add(_textFieldController.text);
+                // _textFieldController.clear();
+                // setState(() {});
               },
+              // onChanged: (value) {
+              //   setState(() {
+              //     valueText = _textFieldController.text;
+              //     //_textFieldController.text = widget.te
+              //   });
+              // },
               decoration: const InputDecoration(hintText: "Reminder"),
             ),
             actions: <Widget>[
@@ -79,10 +102,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   primary: Colors.green,
                 ),
                 onPressed: () {
+                  //setState(() => ++_count);
                   setState(() {
-                    codeDialog = valueText;
+                    valueText = _textFieldController.text;
                     Navigator.pop(context);
-                    //vents
                   });
                 },
               ),
@@ -147,45 +170,46 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar:
           AppBar(backgroundColor: Colors.teal, title: const Text('Reminder')),
-      body: Center(
-        child: Material(
-          color: const Color.fromARGB(255, 63, 138, 168),
-          // child: ListView(
-          //   children: [
-          //     const SizedBox(height: 40),
-          //     buildMenuItem(
-          //       text: _textFieldController.text,
-          //       icon: Icons.access_alarm,
-          //       onClicked: () => selectedItem(context, 0),
-          //       time: inputDate,
-          //       date: _dateController.text,
-          //     ),
-          //     // const SizedBox(height: 40),
-          //     // buildMenuItem(
-          //     //   text: 'Personal Task',
-          //     //   icon: Icons.access_alarm,
-          //     //   onClicked: () => selectedItem(context, 0),
-          //     // ),
-          //   ],
-          // ),
+      body: Column(children: <Widget>[
+        Expanded(
           child:
-              ListView.builder(itemBuilder: (BuildContext context, int index) {
-            _controllers.add(_textFieldController);
-            return Container(
-              child: buildMenuItem(
-                text: _controllers[index].text,
-                icon: Icons.access_alarm,
-                onClicked: () {
-                  selectedItem(context, index);
-                  _textFieldController.dispose();
-                }, //() => selectedItem(context, 0),
-                time: inputDate,
-                date: _dateController.text,
-              ),
-            );
-          }),
+
+              // color: const Color.fromARGB(255, 63, 138, 168),
+              // child: ListView(
+              //   children: [
+              //     const SizedBox(height: 40),
+              //     buildMenuItem(
+              //       text: _textFieldController.text,
+              //       icon: Icons.access_alarm,
+              //       onClicked: () => selectedItem(context, 0),
+              //       time: inputDate,
+              //       date: _dateController.text,
+              //     ),
+              //     // const SizedBox(height: 40),
+              //     // buildMenuItem(
+              //     //   text: 'Personal Task',
+              //     //   icon: Icons.access_alarm,
+              //     //   onClicked: () => selectedItem(context, 0),
+              //     // ),
+              //   ],
+              // ),
+              //child:
+              ListView.builder(
+                  itemCount: _reminder.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    //controllers.add(_textFieldController);
+                    return buildMenuItem(
+                      text: _reminder[index],
+                      icon: Icons.access_alarm,
+                      onClicked: () {
+                        selectedItem(context, index);
+                      }, //() => selectedItem(context, 0),
+                      time: inputDate,
+                      date: _dateController.text,
+                    );
+                  }),
         ),
-      ),
+      ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _displayTextInputDialog(context);
