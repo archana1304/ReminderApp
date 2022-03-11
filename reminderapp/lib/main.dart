@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -175,10 +173,10 @@ class _MyHomePageState extends State<MyHomePage> {
               child: buildMenuItem(
                 text: _controllers[index].text,
                 icon: Icons.access_alarm,
-                onClicked: () {
-                  selectedItem(context, index);
-                  _textFieldController.dispose();
-                }, //() => selectedItem(context, 0),
+                // onClicked: () {
+                //   selectedItem(context, index);
+                //   _textFieldController.dispose();
+                // }, //() => selectedItem(context, 0),
                 time: inputDate,
                 date: _dateController.text,
               ),
