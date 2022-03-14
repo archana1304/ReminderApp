@@ -61,13 +61,13 @@ class _MyHomePageState extends State<MyHomePage> {
             content: TextField(
               controller: _textFieldController,
               onSubmitted: (text) {
-                _reminder.add(_textFieldController.text);
+                //_reminder.add(_textFieldController.text);
                 //setState(() {});
 
-                setState(() {
-                  _reminder.add(_textFieldController.text);
+                //setState(() {
+                  //_reminder.add(_textFieldController.text);
                   //_textFieldController.clear();
-                });
+               // });
                 // _reminder.add(_textFieldController.text);
                 // _textFieldController.clear();
                 // setState(() {});
@@ -103,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   //setState(() => ++_count);
                   setState(() {
                     valueText = _textFieldController.text;
+                    _reminder.add(_textFieldController.text);
                     Navigator.pop(context);
                   });
                 },
@@ -224,7 +225,7 @@ class _MyHomePageState extends State<MyHomePage> {
     required String date,
     required String time,
   }) {
-    const color = Colors.white;
+    const color = Colors.black;
     return ListTile(
       leading: Icon(
         icon,
