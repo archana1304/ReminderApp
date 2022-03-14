@@ -36,18 +36,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String inputDate = "";
   List<String> _reminder = [];
-  // List<TextEditingController> controllers = [];
-  //int _count = 0;
-
-  // void _add() {
-  //   TextEditingController controller = TextEditingController();
-  //   controllers.add(controller);
-
-  //   //for (int i = 0; i < controllers.length; i++) {}
-  // }
-
-  //var _children = List.from(_children)
-
+  List<String> _date = [];
+  List<String> _time = [];
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
@@ -60,24 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: const Text('Add Reminder'),
             content: TextField(
               controller: _textFieldController,
-              onSubmitted: (text) {
-                //_reminder.add(_textFieldController.text);
-                //setState(() {});
-
-                //setState(() {
-                  //_reminder.add(_textFieldController.text);
-                  //_textFieldController.clear();
-               // });
-                // _reminder.add(_textFieldController.text);
-                // _textFieldController.clear();
-                // setState(() {});
-              },
-              // onChanged: (value) {
-              //   setState(() {
-              //     valueText = _textFieldController.text;
-              //     //_textFieldController.text = widget.te
-              //   });
-              // },
+              onSubmitted: (text) {},
               decoration: const InputDecoration(hintText: "Reminder"),
             ),
             actions: <Widget>[
@@ -100,10 +73,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   primary: Colors.green,
                 ),
                 onPressed: () {
-                  //setState(() => ++_count);
                   setState(() {
                     valueText = _textFieldController.text;
                     _reminder.add(_textFieldController.text);
+                    _textFieldController.clear();
+                    _date.add(_dateController.text);
+                    _time.add(inputDate);
                     Navigator.pop(context);
                   });
                 },
@@ -171,42 +146,19 @@ class _MyHomePageState extends State<MyHomePage> {
           AppBar(backgroundColor: Colors.teal, title: const Text('Reminder')),
       body: Column(children: <Widget>[
         Expanded(
-          child:
-
-              // color: const Color.fromARGB(255, 63, 138, 168),
-              // child: ListView(
-              //   children: [
-              //     const SizedBox(height: 40),
-              //     buildMenuItem(
-              //       text: _textFieldController.text,
-              //       icon: Icons.access_alarm,
-              //       onClicked: () => selectedItem(context, 0),
-              //       time: inputDate,
-              //       date: _dateController.text,
-              //     ),
-              //     // const SizedBox(height: 40),
-              //     // buildMenuItem(
-              //     //   text: 'Personal Task',
-              //     //   icon: Icons.access_alarm,
-              //     //   onClicked: () => selectedItem(context, 0),
-              //     // ),
-              //   ],
-              // ),
-              //child:
-              ListView.builder(
-                  itemCount: _reminder.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    //controllers.add(_textFieldController);
-                    return buildMenuItem(
-                      text: _reminder[index],
-                      icon: Icons.access_alarm,
-                      onClicked: () {
-                        selectedItem(context, index);
-                      }, //() => selectedItem(context, 0),
-                      time: inputDate,
-                      date: _dateController.text,
-                    );
-                  }),
+          child: ListView.builder(
+              itemCount: _reminder.length,
+              itemBuilder: (BuildContext context, int index) {
+                return buildMenuItem(
+                  text: _reminder[index],
+                  icon: Icons.access_alarm,
+                  onClicked: () {
+                    selectedItem(context, index);
+                  },
+                  time: _time[index],
+                  date: _date[index],
+                );
+              }),
         ),
       ]),
       floatingActionButton: FloatingActionButton(
