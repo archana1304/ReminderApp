@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:reminderapp/model/reminder_info.dart';
+import 'package:reminderapp/reminder_helper.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,6 +44,17 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
 
+  ReminderHelper _reminderHelper = ReminderHelper();
+Future<List<ReminderInfo>>? _reminders ;
+  void initState(){
+      
+    _reminderHelper.intializeDatabase().then((value)=> {
+      print('--------Datebase Intialized--------'),
+      _reminders = _reminderHelper.getReminders()
+    });
+
+    super.initState();
+  }
   Future<void> _displayTextInputDialog(BuildContext context) async {
     return showDialog(
         context: context,
@@ -74,12 +87,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 onPressed: () {
                   setState(() {
-                    valueText = _textFieldController.text;
-                    _reminder.add(_textFieldController.text);
-                    _textFieldController.clear();
-                    _date.add(_dateController.text);
-                    _time.add(inputDate);
+                    // valueText = _textFieldController.text;
+                    // _reminder.add(_textFieldController.text);
+                    // _textFieldController.clear();
+                    // _date.add(_dateController.text);
+                    // _time.add(inputDate);
                     Navigator.pop(context);
+                    var reminderInfo = ReminderInfo(
+                      title: _textFieldController.text,
+                      reminderDate: selectedDate,
+                      reminderTime:  selectedTime,
+                    );
+                    _reminderHelper.insertReminder(reminderInfo);
+
+                    
                   });
                 },
               ),
@@ -117,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        _dateController.text = DateFormat.yMd().format(selectedDate);
+        //_dateController.text = DateFormat.yMd().format(selectedDate);
       });
     }
   }
@@ -131,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (timeOfDay != null && timeOfDay != selectedTime) {
       setState(() {
         selectedTime = timeOfDay;
-        inputDate = selectedTime.format(context);
+        //inputDate = selectedTime.format(context);
       });
     }
   }
@@ -146,7 +167,11 @@ class _MyHomePageState extends State<MyHomePage> {
           AppBar(backgroundColor: Colors.teal, title: const Text('Reminder')),
       body: Column(children: <Widget>[
         Expanded(
-          child: ListView.builder(
+          child: FutureBuilder(
+            future: _reminders,
+            builder: (context, snapshot) {
+            if(snapshot.hasData) {
+              return ListView.builder(
               itemCount: _reminder.length,
               itemBuilder: (BuildContext context, int index) {
                 return buildMenuItem(
@@ -158,7 +183,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   time: _time[index],
                   date: _date[index],
                 );
-              }),
+              });
+            }
+              return const Center(
+                child: Text(
+                  'loading',
+                ),
+              );
+          })
+          ,
         ),
       ]),
       floatingActionButton: FloatingActionButton(
