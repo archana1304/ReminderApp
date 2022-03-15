@@ -45,7 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _timeController = TextEditingController();
 
   ReminderHelper _reminderHelper = ReminderHelper();
-Future<List<ReminderInfo>>? _reminders ;
+  Future<List<ReminderInfo>>? _reminders ;
+
   void initState(){
       
     _reminderHelper.intializeDatabase().then((value)=> {
@@ -88,17 +89,18 @@ Future<List<ReminderInfo>>? _reminders ;
                 onPressed: () {
                   setState(() {
                     // valueText = _textFieldController.text;
-                    // _reminder.add(_textFieldController.text);
+                    _reminder.add(_textFieldController.text);
                     // _textFieldController.clear();
                     // _date.add(_dateController.text);
                     // _time.add(inputDate);
                     Navigator.pop(context);
+                    
                     var reminderInfo = ReminderInfo(
                       title: _textFieldController.text,
                       reminderDate: selectedDate,
                       reminderTime:  selectedTime,
                     );
-                    _reminderHelper.insertReminder(reminderInfo);
+                   // _reminderHelper.insertReminder(reminderInfo);
 
                     
                   });
@@ -138,7 +140,7 @@ Future<List<ReminderInfo>>? _reminders ;
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        //_dateController.text = DateFormat.yMd().format(selectedDate);
+        _dateController.text = DateFormat.yMd().format(selectedDate);
       });
     }
   }
@@ -152,7 +154,7 @@ Future<List<ReminderInfo>>? _reminders ;
     if (timeOfDay != null && timeOfDay != selectedTime) {
       setState(() {
         selectedTime = timeOfDay;
-        //inputDate = selectedTime.format(context);
+        inputDate = selectedTime.format(context);
       });
     }
   }
@@ -168,18 +170,19 @@ Future<List<ReminderInfo>>? _reminders ;
       body: Column(children: <Widget>[
         Expanded(
           child: FutureBuilder(
-            future: _reminders,
+            future: _reminderHelper.getReminders(),
             builder: (context, snapshot) {
             if(snapshot.hasData) {
+              //_currentReminders = snapshot.data;
               return ListView.builder(
               itemCount: _reminder.length,
               itemBuilder: (BuildContext context, int index) {
                 return buildMenuItem(
-                  text: _reminder[index],
+                  text: _textFieldController.text,
                   icon: Icons.access_alarm,
-                  onClicked: () {
-                    selectedItem(context, index);
-                  },
+                  // onClicked: () {
+                  //   selectedItem(context, index);
+                  // },
                   time: _time[index],
                   date: _date[index],
                 );

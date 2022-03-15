@@ -51,12 +51,14 @@ class ReminderHelper {
     );
     return database;
   }
-
+// insert the data into the database
   Future<void> insertReminder(ReminderInfo reminderInfo) async {
     var db = await database;
     var result = await db.insert(tableReminder, reminderInfo.toMap());
     print('result : $result');
   }
+
+  //fetch the data and return it
   Future<List<ReminderInfo>> getReminders() async {
     List<ReminderInfo> _reminders = [];
 
