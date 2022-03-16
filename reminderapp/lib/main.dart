@@ -48,10 +48,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   ReminderHelper _reminderHelper = ReminderHelper();
 
+  bool isDirty = true;
+
   void initState() {
     _reminderHelper.intializeDatabase().then((value) => {
           print('--------Datebase Intialized--------'),
-          _reminderHelper.getReminders()
+          _reminderHelper.getReminders(isDirty)
         });
     super.initState();
   }
@@ -101,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       reminderTime: selectedTime,
                     );
                     _reminderHelper.insertReminder(reminderInfo);
+                    isDirty;
                     //_reminderHelper.reminders.add(reminderInfo);
                   });
                 },
@@ -169,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(children: <Widget>[
         Expanded(
           child: FutureBuilder(
-              future: _reminderHelper.getReminders(),
+              future: _reminderHelper.getReminders(isDirty),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   List<ReminderInfo> rem = snapshot.data as List<ReminderInfo>;

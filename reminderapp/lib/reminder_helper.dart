@@ -7,12 +7,14 @@ const String columnTitle = 'title';
 const String columnDate = 'reminderDate';
 const String columnTime = 'reminderTime';
 const String columnPending = 'isPending';
+bool isDirty = true;
 //final String columnColorIndex = 'gradientColorIndex';
 
 class ReminderHelper {
   List<ReminderInfo> reminders = [];
   late Database _database;
   bool hasInitDB = false;
+
   //late ReminderHelper _reminderHelper;
 
   // ReminderHelper._createInstance();
@@ -35,11 +37,12 @@ class ReminderHelper {
     var dir = await getDatabasesPath();
     var path = dir + "reminder.db";
 
-    var database = await openDatabase(
-      path,
-      version: 1,
-      onCreate: (db, version) {
-        db.execute('''
+    if (isDirty) {
+      var database = await openDatabase(
+        path,
+        version: 1,
+        onCreate: (db, version) {
+          db.execute('''
         create table $tableReminder ( 
           $columnId integer primary key autoincrement, 
           $columnTitle text not null,
@@ -47,9 +50,13 @@ class ReminderHelper {
           $columnTime text not null,
           $columnPending integer)
         ''');
-      },
-    );
-    return database;
+        },
+      );
+      return database;
+    } else {
+      isDirty = false;
+      return database;
+    }
   }
 
 // insert the data into the database
@@ -60,7 +67,7 @@ class ReminderHelper {
   }
 
   //fetch the data and return it
-  getReminders() async {
+  getReminders(isDirty) async {
     //List<ReminderInfo> _reminders = [];
 
     var db = await this.database;
