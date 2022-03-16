@@ -1,5 +1,4 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqlite_api.dart';
 import 'package:reminderapp/model/reminder_info.dart';
 
 const String tableReminder = 'reminder';
@@ -11,11 +10,12 @@ const String columnPending = 'isPending';
 //final String columnColorIndex = 'gradientColorIndex';
 
 class ReminderHelper {
+  List<ReminderInfo> reminders = [];
   late Database _database;
   bool hasInitDB = false;
   //late ReminderHelper _reminderHelper;
 
- // ReminderHelper._createInstance();
+  // ReminderHelper._createInstance();
   // factory ReminderHelper() {
   //   if (_reminderHelper == null) {
   //     _reminderHelper = ReminderHelper._createInstance();
@@ -45,12 +45,13 @@ class ReminderHelper {
           $columnTitle text not null,
           $columnDate text not null,
           $columnTime text not null,
-          $columnPending integer,)
+          $columnPending integer)
         ''');
       },
     );
     return database;
   }
+
 // insert the data into the database
   Future<void> insertReminder(ReminderInfo reminderInfo) async {
     var db = await database;
@@ -59,21 +60,25 @@ class ReminderHelper {
   }
 
   //fetch the data and return it
-  Future<List<ReminderInfo>> getReminders() async {
-    List<ReminderInfo> _reminders = [];
+  getReminders() async {
+    //List<ReminderInfo> _reminders = [];
 
     var db = await this.database;
     var result = await db.query(tableReminder);
-    result.forEach((element) {
-      var reminderInfo = ReminderInfo.fromMap(element);
-      _reminders.add(reminderInfo);
-    });
+    reminders = result.isNotEmpty
+        ? result.map((e) => ReminderInfo.fromMap(e)).toList()
+        : [];
+    // result.forEach((element) {
+    //   var reminderInfo = ReminderInfo.fromMap(element);
+    //   _reminders.add(reminderInfo);
+    // });
 
-    return _reminders;
+    return reminders;
   }
 
   Future<int> delete(int id) async {
     var db = await this.database;
-    return await db.delete(tableReminder, where: '$columnId = ?', whereArgs: [id]);
+    return await db
+        .delete(tableReminder, where: '$columnId = ?', whereArgs: [id]);
   }
 }

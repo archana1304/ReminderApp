@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:reminderapp/model/reminder_info.dart';
 import 'package:reminderapp/reminder_helper.dart';
 
@@ -43,19 +44,18 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
+  static const TimeOfDay defaultTime = TimeOfDay(hour: 12, minute: 30);
 
   ReminderHelper _reminderHelper = ReminderHelper();
-  Future<List<ReminderInfo>>? _reminders ;
 
-  void initState(){
-      
-    _reminderHelper.intializeDatabase().then((value)=> {
-      print('--------Datebase Intialized--------'),
-      _reminders = _reminderHelper.getReminders()
-    });
-
+  void initState() {
+    _reminderHelper.intializeDatabase().then((value) => {
+          print('--------Datebase Intialized--------'),
+          _reminderHelper.getReminders()
+        });
     super.initState();
   }
+
   Future<void> _displayTextInputDialog(BuildContext context) async {
     return showDialog(
         context: context,
@@ -94,15 +94,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     // _date.add(_dateController.text);
                     // _time.add(inputDate);
                     Navigator.pop(context);
-                    
+
                     var reminderInfo = ReminderInfo(
                       title: _textFieldController.text,
                       reminderDate: selectedDate,
-                      reminderTime:  selectedTime,
+                      reminderTime: selectedTime,
                     );
-                   // _reminderHelper.insertReminder(reminderInfo);
-
-                    
+                    _reminderHelper.insertReminder(reminderInfo);
+                    //_reminderHelper.reminders.add(reminderInfo);
                   });
                 },
               ),
@@ -170,31 +169,33 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(children: <Widget>[
         Expanded(
           child: FutureBuilder(
-            future: _reminderHelper.getReminders(),
-            builder: (context, snapshot) {
-            if(snapshot.hasData) {
-              //_currentReminders = snapshot.data;
-              return ListView.builder(
-              itemCount: _reminder.length,
-              itemBuilder: (BuildContext context, int index) {
-                return buildMenuItem(
-                  text: _textFieldController.text,
-                  icon: Icons.access_alarm,
-                  // onClicked: () {
-                  //   selectedItem(context, index);
-                  // },
-                  time: _time[index],
-                  date: _date[index],
+              future: _reminderHelper.getReminders(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<ReminderInfo> rem = snapshot.data as List<ReminderInfo>;
+                  //_currentReminders = snapshot.data;
+                  return ListView.builder(
+                      itemCount: rem.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return buildMenuItem(
+                          text: rem[index].title ?? "Reminder",
+                          icon: Icons.access_alarm,
+                          onClicked: () {
+                            selectedItem(context, index);
+                          },
+                          time: (rem[index].reminderTime ?? defaultTime)
+                              .format(context),
+                          date: DateFormat.yMd().format(
+                              rem[index].reminderDate ?? DateTime.now()),
+                        );
+                      });
+                }
+                return const Center(
+                  child: Text(
+                    'loading',
+                  ),
                 );
-              });
-            }
-              return const Center(
-                child: Text(
-                  'loading',
-                ),
-              );
-          })
-          ,
+              }),
         ),
       ]),
       floatingActionButton: FloatingActionButton(
