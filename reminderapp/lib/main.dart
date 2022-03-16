@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'package:intl/intl.dart';
-import 'package:sqflite/sqflite.dart';
+
 import 'package:reminderapp/model/reminder_info.dart';
 import 'package:reminderapp/reminder_helper.dart';
 
@@ -50,12 +52,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool isDirty = true;
 
-  void initState() {
+  Future<void> initState() async {
     _reminderHelper.intializeDatabase().then((value) => {
           print('--------Datebase Intialized--------'),
           _reminderHelper.getReminders(isDirty)
         });
     super.initState();
+  }
+
+  final FlutterLocalNotificationsPlugin notifsPlugin =
+      FlutterLocalNotificationsPlugin();
+  //late NotificationAppLaunchDetails notifsPlugin;
+
+  Future<void> notification() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    // await initStore();
+    // store = getStore();
+
+    // notificationAppLaunchDetails =
+    //     await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    // await initNotifications(flutterLocalNotificationsPlugin);
   }
 
   Future<void> _displayTextInputDialog(BuildContext context) async {
