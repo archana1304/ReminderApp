@@ -1,57 +1,90 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart'
-    as notifs;
-import 'package:rxdart/subjects.dart' as rxSub;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:reminderapp/main.dart';
+import 'package:reminderapp/model/reminder_info.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class NotificationClass {
   final int? id;
   final String? title;
   final String? body;
   final String? payload;
+  final String? Date;
+  NotificationClass({this.id, this.body, this.payload, this.title, this.Date});
 
-  NotificationClass({this.id, this.body, this.payload, this.title});
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
-  final rxSub.BehaviorSubject<NotificationClass>
-      didReceiveLocalNotificationSubject =
-      rxSub.BehaviorSubject<NotificationClass>();
-  final rxSub.BehaviorSubject<String> selectNotificationSubject =
-      rxSub.BehaviorSubject<String>();
+  Future<void> initNotifications() async {
+    final AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
 
-  Future<void> initNotifications(
-      notifs.FlutterLocalNotificationsPlugin notifsPlugin) async {
-    var initializationSettingsAndroid =
-        notifs.AndroidInitializationSettings('icon_image');
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+            android: initializationSettingsAndroid, iOS: null);
 
-    var initializationSettings =
-        notifs.InitializationSettings(initializationSettingsAndroid, null);
+//initialize timezone package
+    tz.initializeTimeZones();
 
-    await notifsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String payload) async {
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: (String? payload) async {
       if (payload != null) {
-        print('notification payload: ' + payload);
+        debugPrint('notification payload: ' + payload);
       }
       selectNotificationSubject.add(payload);
     });
-    print("Notifications initialised successfully");
+
+    Future<void> scheduleNotification(
+        FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin,
+        String id,
+        String body,
+        DateTime scheduledNotificationDateTime) async {
+      var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        id,
+        'Reminder notifications',
+        //'Remember about it',
+        icon: 'app_icon',
+      );
+
+      final details =
+          NotificationDetails(android: androidPlatformChannelSpecifics);
+      //var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+
+      // await flutterLocalNotificationsPlugin.schedule(
+      //     0, 'Reminder', body, scheduledNotificationDateTime, details);
+    }
   }
 
-  Future<void> scheduleNotification(
-      notifs.FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin,
-      String id,
-      String body,
-      DateTime scheduledNotificationDateTime) async {
-    var androidPlatformChannelSpecifics = notifs.AndroidNotificationDetails(
-      id,
-      'Reminder notifications',
-      'Remember about it',
-      icon: 'app_icon',
-    );
+  final AndroidNotificationDetails _androidNotificationDetails =
+      const AndroidNotificationDetails(
+    'channel ID',
+    'channel name',
+    //'channel description',
+    playSound: true,
+    priority: Priority.high,
+    importance: Importance.high,
+  );
 
-    var details =
-        notifs.NotificationDetails(androidPlatformChannelSpecifics, null);
-    //var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+  late final NotificationDetails _notificationDetails =
+      NotificationDetails(android: _androidNotificationDetails, iOS: null);
 
-    await flutterLocalNotificationsPlugin.schedule(
-        0, 'Reminder', body, scheduledNotificationDateTime, details);
+  // Future<void> showNotifications() async {
+  //   await flutterLocalNotificationsPlugin.show(
+  //       id!, title, body, _notificationDetails);
+  // }
+
+  Future<void> scheduleNotifications(ReminderInfo reminderInfo) async {
+    DateTime dateTime = reminderInfo.getReminderTime().toUtc();
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        reminderInfo.id!,
+        reminderInfo.title,
+        Date,
+        tz.TZDateTime.utc(dateTime.year, dateTime.month, dateTime.day,
+            dateTime.hour, dateTime.minute),
+        _notificationDetails,
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime);
   }
 }

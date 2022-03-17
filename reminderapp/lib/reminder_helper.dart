@@ -60,10 +60,12 @@ class ReminderHelper {
   }
 
 // insert the data into the database
-  Future<void> insertReminder(ReminderInfo reminderInfo) async {
+  Future<ReminderInfo> insertReminder(ReminderInfo reminderInfo) async {
     var db = await database;
     var result = await db.insert(tableReminder, reminderInfo.toMap());
-    print('result : $result');
+    reminderInfo.id = result;
+    return reminderInfo;
+    //print('result : $result');
   }
 
   //fetch the data and return it
@@ -75,17 +77,14 @@ class ReminderHelper {
     reminders = result.isNotEmpty
         ? result.map((e) => ReminderInfo.fromMap(e)).toList()
         : [];
-    // result.forEach((element) {
-    //   var reminderInfo = ReminderInfo.fromMap(element);
-    //   _reminders.add(reminderInfo);
-    // });
 
     return reminders;
   }
 
-  Future<int> delete(int id) async {
+  Future<int> delete(int Id) async {
     var db = await this.database;
+
     return await db
-        .delete(tableReminder, where: '$columnId = ?', whereArgs: [id]);
+        .delete(tableReminder, where: '$columnId = ?', whereArgs: [Id]);
   }
 }

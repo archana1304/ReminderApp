@@ -4,9 +4,35 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 
 import 'package:reminderapp/model/reminder_info.dart';
+import 'package:reminderapp/notifications_helper.dart';
 import 'package:reminderapp/reminder_helper.dart';
+import 'package:rxdart/rxdart.dart';
+
+bool hasInit = false;
+
+final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
+    BehaviorSubject<ReceivedNotification>();
+
+final BehaviorSubject<String?> selectNotificationSubject =
+    BehaviorSubject<String?>();
+
+class ReceivedNotification {
+  ReceivedNotification({
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.payload,
+  });
+
+  final int id;
+  final String? title;
+  final String? body;
+  final String? payload;
+}
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  _notificationClass.initNotifications().then((value) => {hasInit = true});
   runApp(const MyApp());
 }
 
@@ -35,10 +61,11 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+NotificationClass _notificationClass = NotificationClass();
+
 class _MyHomePageState extends State<MyHomePage> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
-
   String inputDate = "";
   List<String> _reminder = [];
   List<String> _date = [];
@@ -48,30 +75,17 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _timeController = TextEditingController();
   static const TimeOfDay defaultTime = TimeOfDay(hour: 12, minute: 30);
 
-  ReminderHelper _reminderHelper = ReminderHelper();
+  //NotificationClass _notificationClass = NotificationClass();
 
+  ReminderHelper _reminderHelper = ReminderHelper();
   bool isDirty = true;
 
-  Future<void> initState() async {
+  void initState() {
     _reminderHelper.intializeDatabase().then((value) => {
           print('--------Datebase Intialized--------'),
           _reminderHelper.getReminders(isDirty)
         });
     super.initState();
-  }
-
-  final FlutterLocalNotificationsPlugin notifsPlugin =
-      FlutterLocalNotificationsPlugin();
-  //late NotificationAppLaunchDetails notifsPlugin;
-
-  Future<void> notification() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    // await initStore();
-    // store = getStore();
-
-    // notificationAppLaunchDetails =
-    //     await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-    // await initNotifications(flutterLocalNotificationsPlugin);
   }
 
   Future<void> _displayTextInputDialog(BuildContext context) async {
@@ -106,11 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 onPressed: () {
                   setState(() {
-                    // valueText = _textFieldController.text;
                     _reminder.add(_textFieldController.text);
-                    // _textFieldController.clear();
-                    // _date.add(_dateController.text);
-                    // _time.add(inputDate);
                     Navigator.pop(context);
 
                     var reminderInfo = ReminderInfo(
@@ -118,9 +128,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       reminderDate: selectedDate,
                       reminderTime: selectedTime,
                     );
-                    _reminderHelper.insertReminder(reminderInfo);
+                    _reminderHelper.insertReminder(reminderInfo).then((value) =>
+                        {_notificationClass.scheduleNotifications(value)});
                     isDirty;
-                    //_reminderHelper.reminders.add(reminderInfo);
                   });
                 },
               ),
@@ -192,15 +202,16 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   List<ReminderInfo> rem = snapshot.data as List<ReminderInfo>;
-                  //_currentReminders = snapshot.data;
                   return ListView.builder(
                       itemCount: rem.length,
                       itemBuilder: (BuildContext context, int index) {
                         return buildMenuItem(
                           text: rem[index].title ?? "Reminder",
                           icon: Icons.access_alarm,
-                          onClicked: () {
-                            selectedItem(context, index);
+                          OnLongPress: () {
+                            setState(() {
+                              //_reminderHelper.delete(reminderInfo).then();
+                            });
                           },
                           time: (rem[index].reminderTime ?? defaultTime)
                               .format(context),
@@ -229,7 +240,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget buildMenuItem({
     required String text,
     required IconData icon,
-    VoidCallback? onClicked,
+    VoidCallback? OnLongPress,
     required String date,
     required String time,
   }) {
@@ -242,7 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
       title: Text(text, style: const TextStyle(color: color)),
       subtitle: Text(time, style: const TextStyle(color: color)),
       trailing: Text(date, style: const TextStyle(color: color)),
-      onTap: onClicked,
+      onLongPress: OnLongPress,
     );
   }
 

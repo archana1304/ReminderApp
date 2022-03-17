@@ -40,4 +40,10 @@ class ReminderInfo {
             reminderTime!.minute.toString(),
         "isPending": isPending,
       };
+
+  DateTime getReminderTime() {
+    DateTime dateTime = DateTime(reminderDate!.year, reminderDate!.month,
+        reminderDate!.day, reminderTime!.hour, reminderTime!.minute);
+    return dateTime;
+  }
 }
