@@ -89,29 +89,181 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _displayTextInputDialog(BuildContext context) async {
+    Dialog fancyDialog = Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        height: 300.0,
+        width: 300.0,
+        child: Stack(
+          children: <Widget>[
+            Container(
+              width: double.infinity,
+              height: 300,
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.fromLTRB(1.0, 2.0, 1.0, 2.0),
+              width: double.infinity,
+              height: 50,
+              alignment: Alignment.bottomCenter,
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 138, 102, 221),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+              ),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Add Reminder",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment(0.5, -0.5),
+              child: TextField(
+              controller: _textFieldController,
+              onSubmitted: (text) {},
+              decoration: const InputDecoration(hintText: "Reminder",contentPadding: EdgeInsets.all(20)),
+            ),
+            ),
+            Align(
+              alignment: Alignment(-0.4,0.2),
+              child: ElevatedButton(
+                child: const Icon(Icons.event),
+                style: ElevatedButton.styleFrom(
+                  onPrimary: Colors.white,
+                  primary: const Color.fromARGB(255, 63, 99, 129),
+                ),
+                onPressed: () {
+                  _selectDate(context);
+                },
+              ),
+            ),
+            Align(
+              alignment: Alignment(0.6,0.2),
+              child: ElevatedButton(
+                child: const Icon(Icons.timer),
+                style: ElevatedButton.styleFrom(
+                  onPrimary: Colors.white,
+                  primary: const Color.fromARGB(255, 63, 99, 129),
+                ),
+                onPressed: () {
+                  _selectTime(context);
+                },
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    _reminder.add(_textFieldController.text);
+                    Navigator.pop(context);
+
+                    var reminderInfo = ReminderInfo(
+                      title: _textFieldController.text,
+                      reminderDate: selectedDate,
+                      reminderTime: selectedTime,
+                    );
+                    _reminderHelper.insertReminder(reminderInfo).then((value) =>
+                        {_notificationClass.scheduleNotifications(value)});
+                    isDirty;
+                    _textFieldController.clear();
+                  });
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 40, 134, 32),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(12),
+                      bottomRight: Radius.circular(12),
+                    ),
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "save",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              // These values are based on trial & error method
+              alignment: Alignment(1.05, -1.05),
+              child: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 155, 49, 49),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.close,
+                    color: Color.fromARGB(255, 219, 209, 209),
+                  ),
+                  
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    showDialog(
+        context: context, builder: (BuildContext context) => fancyDialog);
+  }
+  /*Future<void> _displayTextInputDialog(BuildContext context) async {
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
             title: const Text('Add Reminder'),
+            // actions: <Widget>[
+            // ElevatedButton(
+            //   onPressed:()=> Navigator.pop(context,true) , 
+            //   child: Icon (Icons.close)),
+            // ]
             content: TextField(
               controller: _textFieldController,
               onSubmitted: (text) {},
               decoration: const InputDecoration(hintText: "Reminder"),
             ),
             actions: <Widget>[
-              ElevatedButton(
-                child: const Text('CANCEL'),
-                style: ElevatedButton.styleFrom(
-                  onPrimary: Colors.white,
-                  primary: Colors.red,
-                ),
-                onPressed: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-              ),
+              // ElevatedButton(
+              //   child: const Text('CANCEL'),
+              //   style: ElevatedButton.styleFrom(
+              //     onPrimary: Colors.white,
+              //     primary: Colors.red,
+              //   ),
+              //   onPressed: () {
+              //     setState(() {
+              //       Navigator.pop(context);
+              //     });
+              //   },
+              // ),
               ElevatedButton(
                 child: const Text('OK'),
                 style: ElevatedButton.styleFrom(
@@ -154,10 +306,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   _selectTime(context);
                 },
               ),
+              
             ],
           );
         });
-  }
+  }*/
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -258,24 +411,24 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void selectedItem(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => const WorkReminder(),
-        ));
-        break;
-    }
-  }
+  // void selectedItem(BuildContext context, int index) {
+  //   switch (index) {
+  //     case 0:
+  //       Navigator.of(context).push(MaterialPageRoute(
+  //         builder: (context) => const WorkReminder(),
+  //       ));
+  //       break;
+  //   }
+  // }
 }
 
-class WorkReminder extends StatelessWidget {
-  const WorkReminder({Key? key}) : super(key: key);
+// class WorkReminder extends StatelessWidget {
+//   const WorkReminder({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Work Task'),
-        ),
-      );
-}
+//   @override
+//   Widget build(BuildContext context) => Scaffold(
+//         appBar: AppBar(
+//           title: const Text('Work Task'),
+//         ),
+//       );
+// }
