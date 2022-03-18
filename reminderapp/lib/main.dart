@@ -210,7 +210,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           icon: Icons.access_alarm,
                           OnLongPress: () {
                             setState(() {
-                              //_reminderHelper.delete(reminderInfo).then();
+                              rem.remove(index);
+                              _reminderHelper.delete(rem[index].id ?? 0);
                             });
                           },
                           time: (rem[index].reminderTime ?? defaultTime)
