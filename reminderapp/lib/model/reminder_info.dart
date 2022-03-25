@@ -1,4 +1,4 @@
-import 'dart:ffi';
+//import 'dart:ffi';
 //import 'dart:js';
 import 'package:flutter/material.dart';
 
@@ -7,14 +7,13 @@ class ReminderInfo {
   String? title;
   DateTime? reminderDate;
   TimeOfDay? reminderTime;
-  Bool? isPending;
 
-  ReminderInfo(
-      {this.id,
-      this.title,
-      this.reminderDate,
-      this.reminderTime,
-      this.isPending});
+  ReminderInfo({
+    this.id,
+    this.title,
+    this.reminderDate,
+    this.reminderTime,
+  });
 
   static TimeOfDay timeFromString(String formattedTime) {
     var splitTime = formattedTime.split(":");
@@ -28,7 +27,6 @@ class ReminderInfo {
         title: json["title"],
         reminderDate: DateTime.parse(json["reminderDate"]),
         reminderTime: timeFromString(json["reminderTime"]),
-        isPending: json["isPending"],
       );
 
   Map<String, dynamic> toMap() => {
@@ -38,7 +36,6 @@ class ReminderInfo {
         "reminderTime": reminderTime!.hour.toString() +
             ":" +
             reminderTime!.minute.toString(),
-        "isPending": isPending,
       };
 
   DateTime getReminderTime() {

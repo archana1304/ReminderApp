@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 import 'package:intl/intl.dart';
-
 import 'package:reminderapp/model/reminder_info.dart';
 import 'package:reminderapp/notifications_helper.dart';
 import 'package:reminderapp/reminder_helper.dart';
@@ -135,15 +132,18 @@ class _MyHomePageState extends State<MyHomePage> {
             Align(
               alignment: Alignment(0.5, -0.5),
               child: TextField(
-              controller: _textFieldController,
-              onSubmitted: (text) {},
-              decoration: const InputDecoration(hintText: "Reminder",contentPadding: EdgeInsets.all(20)),
-            ),
+                controller: _textFieldController,
+                onSubmitted: (text) {},
+                key: const Key('inputText'),
+                decoration: const InputDecoration(
+                    hintText: "Reminder", contentPadding: EdgeInsets.all(20)),
+              ),
             ),
             Align(
-              alignment: Alignment(-0.4,0.2),
+              alignment: Alignment(-0.4, 0.2),
               child: ElevatedButton(
                 child: const Icon(Icons.event),
+                key: const Key('inputDate'),
                 style: ElevatedButton.styleFrom(
                   onPrimary: Colors.white,
                   primary: const Color.fromARGB(255, 63, 99, 129),
@@ -154,9 +154,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Align(
-              alignment: Alignment(0.6,0.2),
+              alignment: Alignment(0.6, 0.2),
               child: ElevatedButton(
                 child: const Icon(Icons.timer),
+                key: const Key('inputTime'),
                 style: ElevatedButton.styleFrom(
                   onPrimary: Colors.white,
                   primary: const Color.fromARGB(255, 63, 99, 129),
@@ -199,6 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     alignment: Alignment.center,
                     child: Text(
                       "save",
+                      key: Key('SaveBtn'),
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -224,7 +226,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     Icons.close,
                     color: Color.fromARGB(255, 219, 209, 209),
                   ),
-                  
                 ),
               ),
             ),
@@ -235,82 +236,6 @@ class _MyHomePageState extends State<MyHomePage> {
     showDialog(
         context: context, builder: (BuildContext context) => fancyDialog);
   }
-  /*Future<void> _displayTextInputDialog(BuildContext context) async {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Add Reminder'),
-            // actions: <Widget>[
-            // ElevatedButton(
-            //   onPressed:()=> Navigator.pop(context,true) , 
-            //   child: Icon (Icons.close)),
-            // ]
-            content: TextField(
-              controller: _textFieldController,
-              onSubmitted: (text) {},
-              decoration: const InputDecoration(hintText: "Reminder"),
-            ),
-            actions: <Widget>[
-              // ElevatedButton(
-              //   child: const Text('CANCEL'),
-              //   style: ElevatedButton.styleFrom(
-              //     onPrimary: Colors.white,
-              //     primary: Colors.red,
-              //   ),
-              //   onPressed: () {
-              //     setState(() {
-              //       Navigator.pop(context);
-              //     });
-              //   },
-              // ),
-              ElevatedButton(
-                child: const Text('OK'),
-                style: ElevatedButton.styleFrom(
-                  onPrimary: Colors.white,
-                  primary: Colors.green,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _reminder.add(_textFieldController.text);
-                    Navigator.pop(context);
-
-                    var reminderInfo = ReminderInfo(
-                      title: _textFieldController.text,
-                      reminderDate: selectedDate,
-                      reminderTime: selectedTime,
-                    );
-                    _reminderHelper.insertReminder(reminderInfo).then((value) =>
-                        {_notificationClass.scheduleNotifications(value)});
-                    isDirty;
-                  });
-                },
-              ),
-              ElevatedButton(
-                child: const Icon(Icons.event),
-                style: ElevatedButton.styleFrom(
-                  onPrimary: Colors.white,
-                  primary: const Color.fromARGB(255, 63, 99, 129),
-                ),
-                onPressed: () {
-                  _selectDate(context);
-                },
-              ),
-              ElevatedButton(
-                child: const Icon(Icons.timer),
-                style: ElevatedButton.styleFrom(
-                  onPrimary: Colors.white,
-                  primary: const Color.fromARGB(255, 125, 165, 72),
-                ),
-                onPressed: () {
-                  _selectTime(context);
-                },
-              ),
-              
-            ],
-          );
-        });
-  }*/
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -356,6 +281,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (snapshot.hasData) {
                   List<ReminderInfo> rem = snapshot.data as List<ReminderInfo>;
                   return ListView.builder(
+                      key: const Key('listReminder'),
                       itemCount: rem.length,
                       itemBuilder: (BuildContext context, int index) {
                         return buildMenuItem(
@@ -383,11 +309,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ]),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _displayTextInputDialog(context);
-        },
-        child: const Icon(Icons.add),
-      ),
+          onPressed: () {
+            _displayTextInputDialog(context);
+          },
+          child: const Icon(Icons.add),
+          key: const Key('addBtn')),
     );
   }
 
